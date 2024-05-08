@@ -52,8 +52,8 @@ export function activate(context: vscode.ExtensionContext) {
   })
 
   const stopDisposable = vscode.commands.registerCommand('mob-programming-timer.finish', () => {
-    isInProgress = false
     stopButton.hide()
+    isInProgress = false
     startButton.text = startButtonText
   })
 
@@ -77,9 +77,9 @@ const zenkakuToHankaku = (word: string): string => {
 }
 
 const getRemainingMinuteAndSecond = (intervalTime: number): [number, number] => {
-  // return [intervalTime, 0]
-  // TODO: 一旦、デバッグしやすいように秒数にしているが、後で分に変更する
-  return [0, intervalTime]
+  // return [RemainingMinute, RemainingSecond(always 0)]
+
+  return [intervalTime, 0]
 }
 
 export const validateInputIntervalTime = (inputIntervalTime: string | undefined): number => {
@@ -126,7 +126,7 @@ export const startMobTimer = ({
     }
 
     if (second === 0) {
-      second = 60
+      second = 59
       minute = minute - 1
     } else {
       second = second - 1
