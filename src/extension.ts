@@ -47,6 +47,9 @@ export function activate(context: vscode.ExtensionContext) {
           })
         } else if (value === 'Finish mob') {
           vscode.commands.executeCommand('mob-programming-timer.finish')
+        } else {
+          // If the user closes the dialog, value become undefined and the timer will be stopped.
+          vscode.commands.executeCommand('mob-programming-timer.finish')
         }
       })
   })
