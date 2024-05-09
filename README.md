@@ -11,4 +11,4 @@ This extension is a timer for mob programming. Set the time, start it, and it no
 
 - When time is up, the timer will notify you with selection of "Start next mob" and "Finish mob".  
 
-  ![interval mob](docs/movie//interval_mob.gif)
+  ![interval mob](docs/movie/interval_mob.gif)
