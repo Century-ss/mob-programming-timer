@@ -2,7 +2,13 @@
   "name": "mob-programming-timer",
   "displayName": "Mob Programming Timer",
   "description": "Timer for mob programming.",
-  "version": "0.0.1",
+  "publisher": "semba",
+  "icon": "docs/icon/logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Century-ss/mob-programming-timer"
+  },
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.88.0"
   },
