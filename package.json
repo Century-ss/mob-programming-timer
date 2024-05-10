@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/Century-ss/mob-programming-timer"
   },
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.88.0"
   },
@@ -22,8 +22,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "mob-programming-timer.helloWorld",
-        "title": "Hello World"
+        "command": "mob-programming-timer.start",
+        "title": "Start Mob Programming Timer"
+      },
+      {
+        "command": "mob-programming-timer.finish",
+        "title": "Finish Mob Programming Timer"
       }
     ]
   },
