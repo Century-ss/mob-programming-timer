@@ -1,9 +1,14 @@
 # Change Log
 
-All notable changes to the "mob-programming-timer" extension will be documented in this file.
+## [0.0.4] - 2024-05-10
+- Modify change log format.
+- Add new commands to start and stop the timer.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## [0.0.3] - 2024-05-09
+- Add logo to the extension.
 
-## [Unreleased]
+## [0.0.2] - 2024-05-09
+- Fix the bug that the timer does not work when user close dialog.
 
-- Initial release
+## [0.0.1] - 2024-05-09
+- Initial release.
