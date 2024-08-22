@@ -1,7 +1,7 @@
 {
   "name": "mob-programming-timer",
-  "displayName": "Mob Programming Timer",
-  "description": "Timer for mob programming.",
+  "displayName": "Simple Mob Programming Timer",
+  "description": "Simple timer for mob programming.",
   "publisher": "semba",
   "icon": "docs/icon/logo.png",
   "repository": {
