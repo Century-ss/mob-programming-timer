@@ -1,5 +1,8 @@
 # Change Log
 
+## [0.0.5] - 2024-08-22
+- Modify description of the extension.
+
 ## [0.0.4] - 2024-05-10
 - Modify change log format.
 - Add new commands to start and stop the timer.
