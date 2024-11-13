@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 
-let isInProgress: boolean = false
+let isInProgress = false
 
 export function activate(context: vscode.ExtensionContext) {
   const startButtonText: string = 'Mob start'
@@ -31,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
         startButton: startButton,
         stopButton: stopButton,
       })
-    }
+    },
   )
 
   const restartDisposable = vscode.commands.registerCommand('mob-programming-timer.restart', () => {
@@ -70,13 +70,13 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() {}
 
 const getDisplayTime = (minute: number, second: number): string => {
-  return String(minute) + ':' + String(second).padStart(2, '0')
+  return `${String(minute)}:${String(second).padStart(2, '0')}`
 }
 
 const zenkakuToHankaku = (word: string): string => {
-  return word.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function (s: string) {
-    return String.fromCharCode(s.charCodeAt(0) - 0xfee0)
-  })
+  return word.replace(/[Ａ-Ｚａ-ｚ０-９]/g, (s: string) =>
+    String.fromCharCode(s.charCodeAt(0) - 0xfee0),
+  )
 }
 
 const getRemainingMinuteAndSecond = (intervalTime: number): [number, number] => {
@@ -89,13 +89,13 @@ export const validateInputIntervalTime = (inputIntervalTime: string | undefined)
   if (inputIntervalTime === undefined) {
     throw new Error('Please set the rotation time.')
   }
-  if (isNaN(parseInt(zenkakuToHankaku(inputIntervalTime)))) {
+  if (Number.isNaN(Number.parseInt(zenkakuToHankaku(inputIntervalTime)))) {
     throw new Error('Please enter an integer.')
   }
-  if (parseInt(zenkakuToHankaku(inputIntervalTime)) === 0) {
+  if (Number.parseInt(zenkakuToHankaku(inputIntervalTime)) === 0) {
     throw new Error('Please enter an integer greater than zero.')
   }
-  return parseInt(zenkakuToHankaku(inputIntervalTime))
+  return Number.parseInt(zenkakuToHankaku(inputIntervalTime))
 }
 
 type startMobTimerType = {
