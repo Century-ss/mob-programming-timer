@@ -1,88 +1,100 @@
 import * as vscode from 'vscode'
 
-let isInProgress = false
+let intervalId: NodeJS.Timeout
 
 export function activate(context: vscode.ExtensionContext) {
-  const startButtonText: string = 'Mob start'
-  let intervalTime: number
+  let intervalMinutes: number
 
   const startButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 0)
   startButton.command = 'mob-programming-timer.start'
-  startButton.text = startButtonText
+  startButton.text = '🚀 Mob start'
   startButton.show()
 
-  const stopButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 0)
-  stopButton.command = 'mob-programming-timer.finish'
-  stopButton.text = 'Mob finish'
+  const remainingTimeBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 0)
+
+  const restartButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 0)
+  restartButton.command = 'mob-programming-timer.restart'
+  restartButton.text = '🔄 Mob restart'
+
+  const finishButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 0)
+  finishButton.command = 'mob-programming-timer.finish'
+  finishButton.text = '🏁 Mob finish'
 
   const startDisposable = vscode.commands.registerCommand(
     'mob-programming-timer.start',
     async () => {
-      isInProgress = true
-
       const inputIntervalTime = await vscode.window.showInputBox({
         title: 'How often do you change drivers in minutes?',
       })
 
-      intervalTime = validateInputIntervalTime(inputIntervalTime)
+      intervalMinutes = validateInputIntervalTime(inputIntervalTime)
 
       startMobTimer({
-        intervalTime: intervalTime,
-        startButton: startButton,
-        stopButton: stopButton,
+        intervalMinutes: intervalMinutes,
+        remainingTimeBar: remainingTimeBar,
       })
+
+      startButton.hide()
+      restartButton.show()
+      finishButton.show()
     },
   )
 
   const restartDisposable = vscode.commands.registerCommand('mob-programming-timer.restart', () => {
-    stopButton.hide()
-    vscode.window
-      .showInformationMessage("👨‍💻🔄👩‍💻 It's time to switch.", 'Start next mob', 'Finish mob')
-      .then((value) => {
-        if (value === 'Start next mob') {
-          startMobTimer({
-            intervalTime: intervalTime,
-            startButton: startButton,
-            stopButton: stopButton,
-          })
-        } else if (value === 'Finish mob') {
-          vscode.commands.executeCommand('mob-programming-timer.finish')
-        } else {
-          // If the user closes the dialog, value become undefined and the timer will be stopped.
-          vscode.commands.executeCommand('mob-programming-timer.finish')
-        }
-      })
+    clearInterval(intervalId)
+    startMobTimer({
+      intervalMinutes: intervalMinutes,
+      remainingTimeBar: remainingTimeBar,
+    })
   })
 
-  const stopDisposable = vscode.commands.registerCommand('mob-programming-timer.finish', () => {
-    stopButton.hide()
-    isInProgress = false
-    startButton.text = startButtonText
+  const notifyTimeUpDisposable = vscode.commands.registerCommand(
+    'mob-programming-timer.notifyTimeUp',
+    () => {
+      clearInterval(intervalId)
+
+      vscode.window
+        .showInformationMessage("👨‍💻🔄👩‍💻 It's time to switch.", 'Restart next mob', 'Finish mob')
+        .then((value) => {
+          if (value === 'Restart next mob') {
+            vscode.commands.executeCommand('mob-programming-timer.restart')
+          } else if (value === 'Finish mob') {
+            vscode.commands.executeCommand('mob-programming-timer.finish')
+          } else {
+            // If the user closes the dialog, value become undefined and do nothing.
+          }
+        })
+    },
+  )
+
+  const finishDisposable = vscode.commands.registerCommand('mob-programming-timer.finish', () => {
+    clearInterval(intervalId)
+
+    remainingTimeBar.hide()
+    finishButton.hide()
+    restartButton.hide()
+    startButton.show()
   })
 
   context.subscriptions.push(startButton)
-  context.subscriptions.push(stopButton)
+  context.subscriptions.push(restartButton)
+  context.subscriptions.push(finishButton)
   context.subscriptions.push(startDisposable)
-  context.subscriptions.push(stopDisposable)
   context.subscriptions.push(restartDisposable)
+  context.subscriptions.push(finishDisposable)
+  context.subscriptions.push(notifyTimeUpDisposable)
 }
 
 export function deactivate() {}
 
 const getDisplayTime = (minute: number, second: number): string => {
-  return `${String(minute)}:${String(second).padStart(2, '0')}`
+  return `⏳ ${String(minute)}:${String(second).padStart(2, '0')}`
 }
 
 const zenkakuToHankaku = (word: string): string => {
   return word.replace(/[Ａ-Ｚａ-ｚ０-９]/g, (s: string) =>
     String.fromCharCode(s.charCodeAt(0) - 0xfee0),
   )
-}
-
-const getRemainingMinuteAndSecond = (intervalTime: number): [number, number] => {
-  // return [RemainingMinute, RemainingSecond(always 0)]
-
-  return [intervalTime, 0]
 }
 
 export const validateInputIntervalTime = (inputIntervalTime: string | undefined): number => {
@@ -98,33 +110,21 @@ export const validateInputIntervalTime = (inputIntervalTime: string | undefined)
   return Number.parseInt(zenkakuToHankaku(inputIntervalTime))
 }
 
-type startMobTimerType = {
-  intervalTime: number
-  startButton: vscode.StatusBarItem
-  stopButton: vscode.StatusBarItem
+type startMobTimerArgs = {
+  intervalMinutes: number
+  remainingTimeBar: vscode.StatusBarItem
 }
 
-export const startMobTimer = ({
-  intervalTime,
-  startButton,
-  stopButton,
-}: startMobTimerType): void => {
-  let minute: number
-  let second: number
-  ;[minute, second] = getRemainingMinuteAndSecond(intervalTime)
+export const startMobTimer = ({ intervalMinutes, remainingTimeBar }: startMobTimerArgs): void => {
+  let minute = intervalMinutes
+  let second = 0
 
-  startButton.text = getDisplayTime(minute, second)
-  stopButton.show()
+  remainingTimeBar.text = getDisplayTime(minute, second)
+  remainingTimeBar.show()
 
-  const intervalId = setInterval(() => {
-    if (!isInProgress) {
-      clearInterval(intervalId)
-      return
-    }
-
+  intervalId = setInterval(() => {
     if (minute === 0 && second === 0) {
-      clearInterval(intervalId)
-      vscode.commands.executeCommand('mob-programming-timer.restart')
+      vscode.commands.executeCommand('mob-programming-timer.notifyTimeUp')
       return
     }
 
@@ -135,6 +135,6 @@ export const startMobTimer = ({
       second = second - 1
     }
 
-    startButton.text = getDisplayTime(minute, second)
+    remainingTimeBar.text = getDisplayTime(minute, second)
   }, 1 * 1000)
 }
