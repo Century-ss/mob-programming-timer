@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.0.6] - 2024-08-22
+- Add restart button.
+- Add emoji to buttons.
+
 ## [0.0.5] - 2024-08-22
 - Modify description of the extension.
 
