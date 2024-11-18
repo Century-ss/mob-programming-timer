@@ -1,4 +1,4 @@
-# mob-programming-timer
+# ⏳ mob-programming-timer
 
 This extension is a simple timer for mob programming. Set the time, start it, and it notifies when time's up. Decide to continue or finish the session when time's up.
 
